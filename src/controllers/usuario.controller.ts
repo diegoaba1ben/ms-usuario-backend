@@ -1,30 +1,19 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
+  Count, CountSchema, Filter, FilterExcludingWhere, repository,
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get, getModelSchemaRef, param, patch, post, put, requestBody, response,
 } from '@loopback/rest';
+import * as bcrypt from 'bcrypt';
 import {Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
-    public usuarioRepository : UsuarioRepository,
-  ) {}
+    public usuarioRepository: UsuarioRepository,
+  ) { }
 
   @post('/usuarios')
   @response(200, {
@@ -44,6 +33,7 @@ export class UsuarioController {
     })
     usuario: Omit<Usuario, 'id'>,
   ): Promise<Usuario> {
+    usuario.password = bcrypt.hashSync(usuario.password, 10);
     return this.usuarioRepository.create(usuario);
   }
 
