@@ -20,6 +20,12 @@ export class Permiso extends Entity {
   })
   descripcion?: string;
 
+  @property({
+    type: 'boolean',
+    reuired: true,
+  })
+  estado: boolean;
+
 
   constructor(data?: Partial<Permiso>) {
     super(data);

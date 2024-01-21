@@ -1,21 +1,10 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
+  Count, CountSchema, Filter,
+  repository, Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
   del,
-  requestBody,
-  response,
+  get, getModelSchemaRef, param, patch, post, put, requestBody, response,
 } from '@loopback/rest';
 import {Permiso} from '../models';
 import {PermisoRepository} from '../repositories';
@@ -23,8 +12,8 @@ import {PermisoRepository} from '../repositories';
 export class PermisoController {
   constructor(
     @repository(PermisoRepository)
-    public permisoRepository : PermisoRepository,
-  ) {}
+    public permisoRepository: PermisoRepository,
+  ) { }
 
   @post('/permisos')
   @response(200, {
@@ -73,6 +62,8 @@ export class PermisoController {
   async find(
     @param.filter(Permiso) filter?: Filter<Permiso>,
   ): Promise<Permiso[]> {
+    filter = filter || {};
+    filter.where = {estado: true};
     return this.permisoRepository.find(filter);
   }
 
@@ -92,7 +83,8 @@ export class PermisoController {
     permiso: Permiso,
     @param.where(Permiso) where?: Where<Permiso>,
   ): Promise<Count> {
-    return this.permisoRepository.updateAll(permiso, where);
+    //Actualizar solo permisos activos
+    return this.permisoRepository.updateAll(permiso, {estado: true});
   }
 
   @get('/permisos/{id}')
@@ -104,11 +96,13 @@ export class PermisoController {
       },
     },
   })
+
   async findById(
-    @param.path.number('id') id: number,
-    @param.filter(Permiso, {exclude: 'where'}) filter?: FilterExcludingWhere<Permiso>
-  ): Promise<Permiso> {
-    return this.permisoRepository.findById(id, filter);
+    @param.filter(Permiso) filter?: Filter<Permiso>,
+  ): Promise<Permiso[]> {
+    filter = filter || {};
+    filter.where = {estado: true};
+    return this.permisoRepository.find(filter);
   }
 
   @patch('/permisos/{id}')
@@ -129,6 +123,27 @@ export class PermisoController {
     await this.permisoRepository.updateById(id, permiso);
   }
 
+  //Métodos para activar y desactivar permisos
+  @patch('/permisos/{id/activar')
+  @response(204, {
+    description: 'Permiso activado',
+  })
+  //Métodos para activar y desactivar permisos
+  @patch('/permisos/{id}/activar')  // corrected route path
+  @response(204, {
+    description: 'Permiso activado',
+  })
+  async activate(@param.path.number('id') id: number): Promise<void> {
+    const permiso = await this.permisoRepository.findById(id);
+    permiso.estado = true;
+    await this.permisoRepository.save(permiso);
+  }
+
+  async deactivate(@param.path.number('id') id: number): Promise<void> {
+    const permiso = await this.permisoRepository.findById(id);
+    permiso.estado = false;
+    await this.permisoRepository.save(permiso);
+  }
   @put('/permisos/{id}')
   @response(204, {
     description: 'Permiso PUT success',

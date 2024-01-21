@@ -1,4 +1,4 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Permiso} from './permiso.model';
 import {RolPermiso} from './rol-permiso.model';
 
@@ -23,7 +23,7 @@ export class Rol extends Entity {
   descripcion?: string;
 
   @hasMany(() => Permiso, {through: {model: () => RolPermiso}})
-  asigPermisoaRol: Permiso[];
+  asignaciones: Permiso[];
 
   @hasMany(() => Permiso, {through: {model: () => RolPermiso}})
   permisoRol: Permiso[];
