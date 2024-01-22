@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {RolRepository} from '../repositories';
 export class RolController {
   constructor(
     @repository(RolRepository)
-    public rolRepository : RolRepository,
-  ) {}
+    public rolRepository: RolRepository,
+  ) { }
 
   @post('/roles')
   @response(200, {
@@ -74,6 +74,10 @@ export class RolController {
     @param.filter(Rol) filter?: Filter<Rol>,
   ): Promise<Rol[]> {
     return this.rolRepository.find(filter);
+  }
+  //método para obtener el estado de un rol
+  getEstados(): string[] {
+    return ['Activo', 'Inactivo'];
   }
 
   @patch('/roles')
@@ -127,6 +131,24 @@ export class RolController {
     rol: Rol,
   ): Promise<void> {
     await this.rolRepository.updateById(id, rol);
+  }
+  @patch('/roles/{id}/activar')
+  @response(204, {
+    description: 'Rol activado',
+  })
+  async activate(@param.path.number('id') id: number): Promise<void> {
+    const rol = await this.rolRepository.findById(id);
+    rol.estado = true;
+    await this.rolRepository.save(rol);
+  }
+  @patch('/roles/{id}/desactivar')
+  @response(204, {
+    description: 'Rol desactivado',
+  })
+  async deactivate(@param.path.number('id') id: number): Promise<void> {
+    const rol = await this.rolRepository.findById(id);
+    rol.estado = false;
+    await this.rolRepository.save(rol);
   }
 
   @put('/roles/{id}')

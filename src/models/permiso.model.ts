@@ -22,7 +22,7 @@ export class Permiso extends Entity {
 
   @property({
     type: 'boolean',
-    reuired: true,
+    required: true,
   })
   estado: boolean;
 

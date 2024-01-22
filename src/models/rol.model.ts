@@ -22,11 +22,14 @@ export class Rol extends Entity {
   })
   descripcion?: string;
 
-  @hasMany(() => Permiso, {through: {model: () => RolPermiso}})
-  asignaciones: Permiso[];
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  estado: boolean;
 
   @hasMany(() => Permiso, {through: {model: () => RolPermiso}})
-  permisoRol: Permiso[];
+  asignaciones: Permiso[];
 
   constructor(data?: Partial<Rol>) {
     super(data);
